@@ -15,7 +15,7 @@ userRouter.post("/register", async (req, res) => {
   }
 
   try {
-    // Check if the email is already registered
+    // Check if the email is already registeredgit
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email is already registered" });
@@ -66,9 +66,21 @@ userRouter.post("/login", async (req, res) => {
 });
 
 // Endpoint to get all users
+// Endpoint to get all users with searching and pagination
 userRouter.get("/", async (req, res) => {
   try {
-    const users = await UserModel.find();
+    const page = parseInt(req.query.page) || 1; // Current page, default is 1
+    const limit = parseInt(req.query.limit) || 10; // Number of users per page, default is 10
+    const searchQuery = req.query.search || ''; // Search query, default is empty string
+
+    // MongoDB query to filter users based on search query
+    const filter = searchQuery ? { $text: { $search: searchQuery } } : {};
+
+    // MongoDB query to get users for the requested page with pagination
+    const users = await UserModel.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
