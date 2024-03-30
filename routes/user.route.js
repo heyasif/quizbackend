@@ -10,7 +10,7 @@ userRouter.post("/register", async (req, res) => {
   const { username, email, password, role } = req.body;
 
   // Check if all required fields are provided
-  if (!username || !email || !password || !role) {
+  if (!username || !email || !password ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
